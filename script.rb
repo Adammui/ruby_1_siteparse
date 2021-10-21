@@ -41,6 +41,7 @@ CSV.open(filename, 'wb') do |csv_line|
         csv_line << line
       end
       puts
+
     end
   end
 end
