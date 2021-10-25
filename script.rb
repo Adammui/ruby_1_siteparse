@@ -3,20 +3,17 @@
 require 'nokogiri'
 require 'curb'
 require 'csv'
-require 'open-uri'
 
 def xp_format(html, xpath_str)
   html.xpath(xpath_str).to_s.strip
 end
 
 def get_html(url)
-  #html_file = URI.open(url) # another variant
-  #Nokogiri::HTML(html_file)
   html_file = Curl.get(url) do |curl|
-   curl.ssl_verify_peer = false
-   curl.ssl_verify_host = 0
+    curl.ssl_verify_peer = false
+    curl.ssl_verify_host = 0
   end
-   Nokogiri::HTML(html_file.body_str)
+  Nokogiri::HTML(html_file.body_str)
 end
 
 def change_page_html(url, html, page_num)
