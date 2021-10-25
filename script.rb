@@ -10,13 +10,13 @@ def xp_format(html, xpath_str)
 end
 
 def get_html(url)
-  html_file = URI.open(url) # parse needs 69 sec
-  Nokogiri::HTML(html_file)
-  # html_file = Curl.get(url) do |curl| # 115 sec
-  #  curl.ssl_verify_peer = false
-  #  curl.ssl_verify_host = 0
-  # end
-  # Nokogiri::HTML(html_file.body_str)
+  #html_file = URI.open(url) # another variant
+  #Nokogiri::HTML(html_file)
+  html_file = Curl.get(url) do |curl|
+   curl.ssl_verify_peer = false
+   curl.ssl_verify_host = 0
+  end
+   Nokogiri::HTML(html_file.body_str)
 end
 
 def change_page_html(url, html, page_num)
