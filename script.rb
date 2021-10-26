@@ -36,14 +36,13 @@ end
 
 def get_product_variations(product_html) #todo endit the method
   product_variations = []
+  product_name = product_html.xpath("//h1[@class='product_main_name']/text()").to_s
+  product_img = product_html.xpath("//img[@id='bigpic']/@src").to_s
+
   product_html.xpath("//ul[@class='attribute_radio_list pundaline-variations']/li/label").each do |option|
-    product_option = option.xpath("//span[@class='radio_label']/text()").to_s
-    product_price = option.xpath('//span[@class="price_comb"]/text()').to_s
-    product_name = product_html.xpath("//h1[@class='product_main_name']/text()").to_s
-    product_img = product_html.xpath("//img[@id='bigpic']/@src").to_s
-    #todo delet ^ and under this is something merged that cant be
-    variation = ["#{product_html.xpath("//h1[@class='product_main_name']/text()")}- #{option.text}",
-                 product_html.xpath("//img[@id='bigpic']/@src")]
+    product_option = option.at_xpath("span[@class='radio_label']/text()").to_s
+    product_price = option.at_xpath('span[@class="price_comb"]/text()').to_s
+    puts variation = ["#{product_name}- #{product_option}", product_price, product_img]
     product_variations.push(variation)
   end
   product_variations
@@ -74,7 +73,7 @@ end
 time = Time.now.to_i
 
 print 'Put category link:'
-puts e_url = "https://www.petsonic.com/collares-antiparasitarios-para-gatos/" #'https://www.petsonic.com/pienso-ownat-perros/'
+puts e_url = 'https://www.petsonic.com/pienso-ownat-perros/' #"https://www.petsonic.com/collares-antiparasitarios-para-gatos/"
 print 'Put file name:'
 puts e_filename = 'file.csv'
 CSV.open(e_filename, 'wb')
