@@ -29,8 +29,7 @@ end
 
 def count_pages(category_html) #todo edit that
   print 'Products in category: '
-  puts products_count = category_html.xpath("//input[@id='nb_item_bottom']/@value").to_s #"//div[@class='product-count hidden-xs']/text()")
-  #.to_s.split(/[^[:word:]]+/)[5].to_i
+  puts products_count = category_html.xpath("//input[@id='nb_item_bottom']/@value").to_s
   (products_count.to_i / 25.0).ceil
 end
 
