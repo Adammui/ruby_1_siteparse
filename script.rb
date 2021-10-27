@@ -48,7 +48,7 @@ def get_product_variations(product_html) #todo endit the method
   product_variations
 end
 
-def parse_category(url, filename)
+def parse(url, filename)
   category_html = get_html(url)
   page_count = count_pages(category_html)
   puts "Pages: #{page_count}"
@@ -78,7 +78,7 @@ print 'Put file name:'
 puts e_filename = 'file.csv'
 CSV.open(e_filename, 'wb')
 
-parse_category(e_url, e_filename)
+parse(e_url, e_filename)
 puts 'Finished, check the file'
 
 time1 = Time.now.to_i
