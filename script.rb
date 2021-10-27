@@ -33,7 +33,7 @@ def count_pages(category_html) #todo edit that
   (products_count.to_i / 25.0).ceil
 end
 
-def get_product_variations(product_html) #todo endit the method
+def get_product_variations(product_html)
   product_variations = []
   product_name = product_html.xpath("//h1[@class='product_main_name']/text()")
   product_img = product_html.xpath("//img[@id='bigpic']/@src")
