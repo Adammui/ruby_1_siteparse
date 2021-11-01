@@ -3,82 +3,99 @@
 require 'nokogiri'
 require 'curb'
 require 'csv'
+require 'yaml'
 
-def get_html(url)
-  html_file = Curl.get(url) do |curl|
-    curl.ssl_verify_peer = false
-    curl.ssl_verify_host = 0
+module HTML
+  def get_html(url)
+    html = ''
+    t = Thread.new do
+      html_file = Curl.get(url) do |curl|
+        curl.ssl_verify_peer = false
+        curl.ssl_verify_host = 0
+      end
+      html = Nokogiri::HTML(html_file.body_str)
+    end
+    t.join
+    html
   end
-  Nokogiri::HTML(html_file.body_str)
-end
 
-def get_next_page_html(url, html, page_num)
-  page_html = html
-  if page_num > 1
-    link = url + "?p=#{page_num}"
-    page_html = get_html(link) # 25
-  end
-  page_html
-end
-
-def write_to_file(filename, buffer)
-  CSV.open(filename, 'a+') do |csv|
-    csv << buffer
+  def get_next_page_html(url, page_num)
+    get_html(url + "?p=#{page_num}") if page_num > 1
   end
 end
 
-def count_pages(category_html) #todo edit that
-  print 'Products in category: '
-  puts products_count = category_html.xpath("//input[@id='nb_item_bottom']/@value").to_s
-  (products_count.to_i / 25.0).ceil
-end
-
-def get_product_variations(product_html)
-  product_variations = []
-  product_name = product_html.xpath("//h1[@class='product_main_name']/text()")
-  product_img = product_html.xpath("//img[@id='bigpic']/@src")
-
-  product_html.xpath("//ul[@class='attribute_radio_list pundaline-variations']/li/label").each do |option|
-    product_option = option.at_xpath("span[@class='radio_label']/text()")
-    product_price = option.at_xpath('span[@class="price_comb"]/text()')
-    variation = ["#{product_name}- #{product_option}", product_price, product_img]
-    product_variations.push(variation)
+class Product
+  include HTML
+  def initialize(product_url)
+    @product_html = get_html(product_url)
+    @title = @product_html.xpath("//h1[@class='product_main_name']/text()")
+    @img = @product_html.xpath("//img[@id='bigpic']/@src")
   end
-  product_variations
-end
 
-def parse(url, filename)
-  category_html = get_html(url)
-  page_count = count_pages(category_html)
-  puts "Pages: #{page_count}"
-  (1..page_count).each do |page_num|
-    page_html = get_next_page_html(url, category_html, page_num)
-    parse_products_from_page(filename, page_html)
-    puts "#{page_num} page of products written "
+  def write_variations_to_file(filename)
+    CSV.open(filename, 'a+') do |csv|
+      @product_html.xpath("//ul[@class='attribute_radio_list pundaline-variations']//label").each do |product_option|
+        csv << ["#{@title}- #{product_option.at_xpath("span[@class='radio_label']/text()")}",
+                  product_option.at_xpath("span[@class='price_comb']/text()"), @img]
+      end
+    end
+    puts "Written | #{@title}"
   end
 end
 
-def parse_products_from_page(fname, page_html)
-  page_html.xpath("//div[@class='pro_first_box ']//@href").each do |product_url|
-    product_html = get_html(product_url)
-    variations = get_product_variations(product_html)
-    variations.each do |variation|
-      write_to_file(fname, variation)
-      puts "#{product_url} written"
+class Parser
+  include HTML
+  def initialize(url)
+    @url = url
+    @html = get_html(url)
+    @pages_count = get_pages_count
+  end
+
+  def parse_to(filename)
+    (1..@pages_count).each do |page_num|
+      @html = get_next_page_html(@url, page_num) if page_num > 1
+      @html.xpath("//div[@class='pro_first_box ']//@href").each do |product_url|
+        Product.new(product_url).write_variations_to_file(filename)
+      end
+      puts "#{page_num} page of products written"
     end
   end
+
+  def get_pages_count
+    products_count = @html.xpath("//input[@id='nb_item_bottom']/@value").to_s
+    print 'Pages: '
+    puts pages = (products_count.to_i / 25.0).ceil
+    pages
+  end
 end
 
-time = Time.now.to_i
+module YAML
+  def create_yaml(array)
+    yaml_obj = YAML.dump(array)
+    File.open('parameters.yml', 'w+') do |f|
+      f.write(yaml_obj)
+    end
+  end
 
-print 'Put category link:'
-puts e_url = 'https://www.petsonic.com/farmacia-para-gatos/' #"https://www.petsonic.com/pienso-ownat-perros/"
-print 'Put file name:'
-puts e_filename = 'file.csv'
-CSV.open(e_filename, 'wb')
+  def parameters_for_yaml
+    print 'Category link: '
+    puts e_url = 'https://www.petsonic.com/carnilove/' # "https://www.petsonic.com/pienso-ownat-perros/"
+    print 'File name: '
+    puts e_filename = 'file.csv'
+    [e_url, e_filename]
+  end
+end
 
-parse(e_url, e_filename)
+# запись в файл параметров:
+# create_yaml parameters_for_yaml
+
+parameters = YAML.load_file('parameters.yml')
+CSV.open(parameters[1], 'wb') do |csv|
+  csv << ['Product name', 'Price', 'Picture']
+end
+Parser.new(parameters[0]).parse_to(parameters[1])
 puts 'Finished, check the file'
 
-time1 = Time.now.to_i
-puts "#{time1 - time} sec"
+# time = Time.now.to_i
+# time1 = Time.now.to_i
+# puts "#{time1 - time} sec"
