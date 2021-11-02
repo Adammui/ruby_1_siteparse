@@ -88,7 +88,6 @@ end
 # запись в файл параметров:
 # create_yaml parameters_for_yaml
 
-yaml
 parameters = YAML.load_file('parameters.yml')
 CSV.open(parameters[1], 'wb') do |csv|
   csv << ['Product name', 'Price', 'Picture']
