@@ -3,16 +3,11 @@ require 'curb'
 
 module HTML
   def get_html(url)
-    html = ''
-    t = Thread.new do
-      html_file = Curl.get(url) do |curl|
-        curl.ssl_verify_peer = false
-        curl.ssl_verify_host = 0
-      end
-      html = Nokogiri::HTML(html_file.body_str)
+    html_file = Curl.get(url) do |curl|
+      curl.ssl_verify_peer = false
+      curl.ssl_verify_host = 0
     end
-    t.join
-    html
+    Nokogiri::HTML(html_file.body_str)
   end
 
   def get_next_page_html(url, page_num)

@@ -10,9 +10,9 @@ module YAML
 
   def get_parameters_for_yaml
     print 'Category link: '
-    puts  e_url = gets # 'https://www.petsonic.com/carnilove/' # "https://www.petsonic.com/pienso-ownat-perros/"
+    puts  e_url = 'https://www.petsonic.com/carnilove/' # "https://www.petsonic.com/pienso-ownat-perros/"
     print 'File name: '
-    puts  e_filename = gets # 'file.csv'
+    puts  e_filename = 'file_threads.csv'
     [e_url, e_filename]
   end
 end
