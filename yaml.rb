@@ -1,5 +1,5 @@
 require 'yaml'
-
+# todo delet this
 module YAML
   def create_yaml(array)
     yaml_obj = YAML.dump(array)
@@ -21,3 +21,10 @@ def new_yaml
   include YAML
   create_yaml get_parameters_for_yaml
 end
+# notes
+# accessor in product in constructor add ves  edit write to file
+# parser  constructor parse to edit
+# отдельный модуль по работе с сайтом с тредсами с получением страниц
+# продукт с параметрами и аккс и метод сохр в файл
+# неск модулей
+# вынести тредс в отдельный метод

@@ -1,3 +1,10 @@
----
-- https://www.petsonic.com/carnilove/
-- file.csv
+link: https://www.petsonic.com/carnilove/
+filename: file_threads.csv
+xpath:
+    count_products: //input[@id='nb_item_bottom']/@value
+    product_urls: //div[@class='pro_first_box ']//@href
+    product_variations: //ul[@class='attribute_radio_list pundaline-variations']//label
+    product_title: //h1[@class='product_main_name']/text()
+    product_option: span[@class='radio_label']/text()
+    product_price: span[@class="price_comb"]/text()
+    product_img: //img[@id='bigpic']/@src

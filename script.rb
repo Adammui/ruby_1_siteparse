@@ -8,11 +8,15 @@ require_relative 'parser'
 # счетчик времени работы скрипта:
 time = Time.now.to_i
 
-parameters = YAML.load_file('parameters.yml')
-CSV.open(parameters[1], 'wb') do |csv|
+params = YAML.load_file('parameters.yml')
+puts params.inspect
+puts params['link']
+puts params['xpath']['product_title']
+CSV.open(params['filename'], 'wb') do |csv|
   csv << ['Product name', 'Price', 'Picture']
 end
-Parser.new(parameters[0]).parse_to(parameters[1])
+
+Parser.parse_pages
 puts 'Finished, check the file'
 
 time1 = Time.now.to_i
