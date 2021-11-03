@@ -5,7 +5,7 @@ class Parser
   include HTML
   def initialize
     @params = YAML.load_file('parameters.yml')
-    @html = get_html('https://www.petsonic.com/carnilove/')
+    @html = get_html(@params['link'])
   end
 
   def parse_pages
@@ -48,8 +48,9 @@ class Parser
 
   def get_pages_count
     products_count = @html.xpath(@params['xpath']['count_products']).to_s
+    products_on_page = @params['products_on_page'].to_f
     print 'Pages: '
-    puts pages = (products_count.to_i / @params['products_on_page'].to_f).ceil
+    puts pages = (products_count.to_i / 25.0).ceil
     pages
   end
 end

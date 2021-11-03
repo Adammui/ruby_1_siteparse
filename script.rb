@@ -1,5 +1,7 @@
 require 'csv'
+require 'yaml'
 require './parser'
+
 
 # счетчик времени работы скрипта:
 time = Time.now.to_i
