@@ -1,28 +1,18 @@
 require_relative 'product'
-require_relative 'html.rb'
+require './html'
 
-module Parser
-  include HTML_pr
-  @params = YAML.load_file('parameters.yml')
-  @html = HTML_pr.get_html(@params['link'])
-  @pages_count = get_pages_count
+class Parser
+  include HTML
+  def initialize
+    @params = YAML.load_file('parameters.yml')
+    @html = get_html('https://www.petsonic.com/carnilove/')
+  end
 
   def parse_pages
-    (1..@pages_count).each do |page_num|
+    (1..get_pages_count).each do |page_num|
       go_to_next_page(page_num)
       download_product_pages.each { |product_html| write_product(product_html) }
     end
-  end
-
-  def download_product_pages
-    pages, threads = []
-    get_product_urls.each do |product_url|
-      threads << Thread.new do
-        pages << get_html(product_url)
-      end
-    end
-    threads.map(&:join)
-    pages
   end
 
   def write_product(product_html)
@@ -33,6 +23,18 @@ module Parser
       pr.img = product_html.xpath(@params['xpath']['product_img'])
       pr.write_to_file
     end
+  end
+
+  def download_product_pages
+    pages = []
+    threads = []
+    get_product_urls.each do |product_url|
+      threads << Thread.new do
+        pages << get_html(product_url)
+      end
+    end
+    threads.map(&:join)
+    pages
   end
 
   def get_product_urls
@@ -47,7 +49,7 @@ module Parser
   def get_pages_count
     products_count = @html.xpath(@params['xpath']['count_products']).to_s
     print 'Pages: '
-    puts pages = (products_count.to_i / 25.0).ceil
+    puts pages = (products_count.to_i / @params['products_on_page'].to_f).ceil
     pages
   end
 end

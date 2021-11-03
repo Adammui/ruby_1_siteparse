@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'curb'
 
-module HTML_pr
+module HTML
   def get_html(url)
     html_file = Curl.get(url) do |curl|
       curl.ssl_verify_peer = false
