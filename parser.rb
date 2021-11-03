@@ -50,7 +50,7 @@ class Parser
     products_count = @html.xpath(@params['xpath']['count_products']).to_s
     products_on_page = @params['products_on_page'].to_f
     print 'Pages: '
-    puts pages = (products_count.to_i / 25.0).ceil
+    puts pages = (products_count.to_i / products_on_page).ceil
     pages
   end
 end
