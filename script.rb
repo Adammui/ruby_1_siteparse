@@ -1,5 +1,4 @@
 require 'csv'
-require 'yaml'
 require './parser'
 
 # счетчик времени работы скрипта:
