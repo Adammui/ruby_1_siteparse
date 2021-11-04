@@ -1,6 +1,7 @@
 require 'csv'
 require 'yaml'
 require './parser'
+require_relative 'parser'
 
 # счетчик времени работы скрипта:
 time = Time.now.to_i
@@ -10,7 +11,7 @@ CSV.open(params['filename'], 'wb') do |csv|
   csv << ['Product name', 'Price', 'Picture']
 end
 
-Parser.new.parse_pages
+Parser.parse_pages
 puts 'Finished, check the file'
 
 time1 = Time.now.to_i
