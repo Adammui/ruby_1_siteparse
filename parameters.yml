@@ -1,5 +1,5 @@
 link: https://www.petsonic.com/farmacia-para-gatos/
-filename: file_t.csv
+filename: file.csv
 xpath:
     product_urls: //div[@class='pro_first_box ']//@href
     product_variations: //ul[@class='attribute_radio_list pundaline-variations']//label

@@ -8,11 +8,11 @@ module Parser
   def self.parse_pages
     (1..get_pages_count).each do |page_num|
       go_to_next_page(page_num)
-      download_product_pages.each { |product_html| write_product(product_html) }
+      download_product_pages.each { |product_html| parse_product(product_html) }
     end
   end
 
-  def self.write_product(product_html)
+  def self.parse_product(product_html)
     product_html.xpath(@params['xpath']['product_variations']).each do |option|
       pr = Product.new
       pr.title = "#{product_html.xpath(@params['xpath']['product_title'])} -#{option.at_xpath(@params['xpath']['product_option'])}"
