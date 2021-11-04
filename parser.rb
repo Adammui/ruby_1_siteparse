@@ -3,9 +3,9 @@ require './html'
 
 module Parser
   include HTML
+  @params = YAML.load_file('parameters.yml')
+
   def self.parse_pages
-    @params = YAML.load_file('parameters.yml')
-    @html = HTML.get_html(@params['link'])
     (1..get_pages_count).each do |page_num|
       go_to_next_page(page_num)
       download_product_pages.each { |product_html| write_product(product_html) }
@@ -44,6 +44,7 @@ module Parser
   end
 
   def self.get_pages_count
+    @html = HTML.get_html(@params['link'])
     products_count = @html.xpath(@params['xpath']['count_products']).to_s
     products_on_page = @params['products_on_page'].to_f
     print 'Pages: '
